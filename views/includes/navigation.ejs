@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Images Lib</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link <%= path === '/' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
+        </li>
+        <% if (isAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link <%= path === '/add-image' ? 'active' : '' %>" href="/add-image">Add Images</a>
+          </li>
+        <% } %>
+        <li class="nav-item">
+          <% if (!isAuthenticated) { %>
+            <a class="nav-link <%= path === '/login' ? 'active' : '' %>" href="/login">Sign In</a>
+          <% } else { %>
+            <form action="/logout" method="POST">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="submit" class="nav-link" value="Sign Out">
+            </form>
+          <% } %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container">

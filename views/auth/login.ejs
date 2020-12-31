@@ -1,0 +1,23 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+
+<h3 class="font-weight-light text-center text-lg-left mt-3 mb-0">Login</h3>
+<hr class="mt-2 mb-5">
+
+<div class="d-flex flex-column align-items-center">
+  <form action="/login" method="POST" class="w-25">
+    <div class="form-group">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" name="email" id="email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" name="password" id="password" class="form-control">
+    </div>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button type="submit" class="btn btn-primary mt-3 w-100">Login</button>
+  </form>
+  <a href="/signup" class="mt-2">Don't have an account yet?</a>
+</div>
+
+<%- include('../includes/end.ejs') %>

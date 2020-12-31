@@ -1,0 +1,21 @@
+<%- include('includes/head.ejs') %>
+<%- include('includes/navigation.ejs') %>
+
+<h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">Images Library - Gallery</h1>
+<hr class="mt-2 mb-5">
+
+<% if (images.length === 0) { %>
+  <p>No images yet...</p>
+<% } else { %>
+  <div class="row text-center text-lg-left">
+    <% images.forEach((image, i)=> { %>
+      <div class="col-lg-3 col-md-4 col-6">
+        <a href="/images/<%= image._id %>" class="d-block mb-4 h-100">
+          <img class="img-fluid img-thumbnail" src="<%= image.imageUrl %>" alt="Image from <%= image.author %> - <%= image._id %>">
+        </a>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('includes/end.ejs') %>
