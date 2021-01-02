@@ -4,28 +4,34 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
+  const errors = validationResult(req);
   res.render('auth/login', {
     pageTitle: 'Images Lib | Login',
     path: '/login',
-    errorMessage: req.flash('error')
+    validationErrors: errors.array(),
+    oldInput: {
+      email: ''
+    }
   });
 };
 
 exports.postLogin = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return renderLoginError(req, res);
+  }
 
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      req.flash('error', 'Invalid email or password.');
-      return res.redirect('/login');
+      return renderLoginError(req, res);
     }
 
     const doPasswordMatch = await bcrypt.compare(password, user.password);
     if (!doPasswordMatch) {
-      req.flash('error', 'Invalid email or password.');
-      return res.redirect('/login');
+      return renderLoginError(req, res);
     }
     req.session.isLoggedIn = true;
     req.session.user = user;
@@ -39,7 +45,6 @@ exports.postLogin = async (req, res, next) => {
 
 exports.postLogout = async (req, res, next) => {
   try {
-    req.flash('info', 'Successfully logged out.');
     await req.session.destroy();
     res.redirect('/');
   } catch (err) {
@@ -95,3 +100,21 @@ exports.postSignup = async (req, res, next) => {
     console.log(err);
   }
 };
+
+
+// Private
+const renderLoginError = (req, res) => {
+  const errors = isValidationResultEmpty(req) ? [{ msg: 'Invalid email or password.' }] : validationResult(req).array();
+  res.status(422).render('auth/login', {
+    pageTitle: 'Images Lib | Login',
+    path: '/login',
+    validationErrors: errors,
+    oldInput: {
+      email: req.body.email
+    }
+  });
+};
+
+const isValidationResultEmpty = req => {
+  return validationResult(req).array().length === 0;
+}
