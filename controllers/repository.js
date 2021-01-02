@@ -1,7 +1,4 @@
-const path = require('path');
-
 const Image = require('../models/image');
-const User = require('../models/user');
 
 exports.getHome = async (req, res, next) => {
   try {
@@ -10,7 +7,9 @@ exports.getHome = async (req, res, next) => {
     res.render('home', {
       pageTitle: 'Images Lib | Home',
       path: '/',
-      images
+      images,
+      successMessage: req.flash('success'),
+      infoMessage: req.flash('info')
     });
   } catch (err) {
     console.log(err);
@@ -33,7 +32,7 @@ exports.getAddImage = (req, res, next) => {
 exports.postAddImage = async (req, res, next) => {
   const imageUrl = req.body.imageUrl.trim();
   const tags = req.body.tags.trim().split(' ');
-  const user = await User.findById(req.session.user);
+  const user = req.user;
   const image = new Image({
     user: user,
     imageUrl,
@@ -44,6 +43,7 @@ exports.postAddImage = async (req, res, next) => {
     const savedImage = await image.save();
     await user.uploadedImages.push(savedImage._id);
     await user.save();
+    req.flash('info', 'Image uploaded.');
     res.redirect(`/images/${savedImage._id}`);
   } catch (err) {
     renderAddImage(req, res);
@@ -68,10 +68,13 @@ exports.postEditImage = async (req, res, next) => {
 
   try {
     const imageToUpdate = await Image.findById(imageId);
+    if (imageToUpdate.user.toString() !== req.user._id.toString()) {
+      return res.redirect('/');
+    }
     imageToUpdate.imageUrl = imageUrl;
     imageToUpdate.tags = tags;
-
     await imageToUpdate.save();
+    req.flash('info', 'Image edited.');
     res.redirect(`/images/${imageId}`);
   } catch (err) {
     renderEditImage(req, res, imageId);
@@ -81,14 +84,17 @@ exports.postEditImage = async (req, res, next) => {
 
 exports.deleteImage = async (req, res, next) => {
   const imageId = req.params.imageId;
-  const user = await User.findById(req.session.user);
+  const user = req.user;
+  const imageToDelete = await Image.findById(imageId);
 
   try {
+    if (imageToDelete.user.toString() !== req.user._id.toString()) {
+      return res.redirect('/');
+    }
     const deletedImage = await Image.findByIdAndDelete(imageId);
-    user.uploadedImages = user.uploadedImages.filter(imageId => {
-      return imageId.toString() !== deletedImage._id.toString()
-    });
+    removeImageIdFromUserUploadedImages(user, deletedImage);
     await user.save();
+    req.flash('info', 'Image deleted.');
     res.redirect('/');
   } catch (err) {
     res.redirect('/');
@@ -104,9 +110,11 @@ const renderImageDetail = async (req, res, imageId) => {
   res.render('image-detail', {
     pageTitle: 'Images Lib | Details',
     path: '/image-detail',
-    image
+    infoMessage: req.flash('info'),
+    userAllowedToAlterImage: isUserAllowedToAlterImage(req.user, image),
+    image,
   });
-}
+};
 
 const renderAddImage = (req, res) => {
   res.render('edit-image', {
@@ -125,4 +133,14 @@ const renderEditImage = async (req, res, imageId) => {
     editing: true,
     image
   });
-}
+};
+
+const removeImageIdFromUserUploadedImages = (user, deletedImage) => {
+  user.uploadedImages = user.uploadedImages.filter(imageId => {
+    return imageId.toString() !== deletedImage._id.toString()
+  });
+};
+
+const isUserAllowedToAlterImage = (user, image) => {
+  return image.user._id.toString() === user._id.toString();
+};

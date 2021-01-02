@@ -2,9 +2,15 @@
 <%- include('../includes/navigation.ejs') %>
 
 <h3 class="font-weight-light text-center text-lg-left mt-3 mb-0">Login</h3>
-<hr class="mt-2 mb-5">
+<hr class="mt-2 mb-4">
 
 <div class="d-flex flex-column align-items-center">
+  <% if (errorMessage.length > 0) { %>
+    <div class="alert alert-danger" role="alert">
+      <%= errorMessage %>
+    </div>
+  <% } %>
+
   <form action="/login" method="POST" class="w-25">
     <div class="form-group">
       <label for="email" class="form-label">Email</label>

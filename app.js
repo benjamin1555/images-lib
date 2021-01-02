@@ -5,12 +5,14 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 require('dotenv').config();
 
+const User = require('./models/user');
 const repositoryRoutes = require('./routes/repository');
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 const errorController = require('./controllers/error');
-const User = require('./models/user');
 
 const app = express();
 const store = new MongoDBStore( {
@@ -31,6 +33,18 @@ app.use(session({
   store: store
 }));
 app.use(csrfProtection);
+app.use(flash());
+
+app.use(async (req, res, next) => {
+  if (!req.session.user) return next();
+
+  try {
+    req.user = await User.findById(req.session.user._id);
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
@@ -40,6 +54,7 @@ app.use((req, res, next) => {
 
 app.use(repositoryRoutes);
 app.use(authRoutes);
+app.use(userRoutes);
 
 app.use(errorController.get404);
 

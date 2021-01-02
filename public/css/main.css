@@ -1,0 +1,28 @@
+ul {
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+.fixed-bottom-right {
+  position: fixed;
+  max-width: 35%;
+  right: 15px;
+  bottom: 0px;
+}
+
+.uploaded-images td.thumbnail {
+  width: 250px;
+}
+
+.uploaded-images td.tags {
+  width: 400px;
+}
+
+.uploaded-images img {
+  max-width: 200px;
+  height: auto;
+}
+

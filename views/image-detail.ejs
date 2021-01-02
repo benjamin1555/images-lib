@@ -2,16 +2,26 @@
 <%- include('includes/navigation.ejs') %>
 
 <h3 class="font-weight-light text-center text-lg-left mt-4 mb-0">Image sent by <%= image.user.username %></h3>
-<hr class="mt-2 mb-5">
+<hr class="mt-2 mb-4">
+
 <div class="row text-center text-lg-left">
   <img class=" rounded mx-auto d-block" src="<%= image.imageUrl %>" alt="Image from <%= image.author %> - <%= image._id %>">
 </div>
 <p class="mt-2">Tags: <%= image.tags.join(', ') %></p>
-<div class="image-controls d-flex my-3">
-  <a href="/edit-image/<%= image._id %>?edit=true" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Edit Image</a>
-  <form action="/delete-image/<%= image._id %>" method="POST" class="mx-1">
-    <button type="submit" class="btn btn-outline-danger btn-sm">Delete Image</button>
-  </form>
-</div>
+<% if (userAllowedToAlterImage) { %>
+  <div class="image-controls d-flex my-3">
+    <a href="/edit-image/<%= image._id %>?edit=true" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Edit Image</a>
+    <form action="/delete-image/<%= image._id %>" method="POST" class="mx-1">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="btn btn-outline-danger btn-sm">Delete Image</button>
+    </form>
+  </div>
+<% } %>
+
+<% if (infoMessage.length > 0) { %>
+  <div class="alert alert-info fixed-bottom-right" role="alert">
+    <%= infoMessage %>
+  </div>
+<% } %>
 
 <%- include('includes/end.ejs') %>

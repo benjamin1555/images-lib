@@ -18,4 +18,16 @@
   </div>
 <% } %>
 
+<% if (successMessage.length > 0) { %>
+  <div class="alert alert-success fixed-bottom-right" role="alert">
+    <%= successMessage %>
+  </div>
+<% } %>
+
+<% if (infoMessage.length > 0) { %>
+  <div class="alert alert-info fixed-bottom-right" role="alert">
+    <%= infoMessage %>
+  </div>
+<% } %>
+
 <%- include('includes/end.ejs') %>
