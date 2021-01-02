@@ -5,6 +5,17 @@
 <hr class="mt-2 mb-4">
 
 <div class="d-flex flex-column align-items-center">
+  <% if (validationErrors.length > 0) { %>
+    <div class="alert alert-danger w-50 text-center" role="alert">
+      <p>Could not upload picture:</p>
+      <ul>
+        <% validationErrors.forEach(error => { %>
+          <li>- <%= error.msg %></li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+
   <form action="<%= editing ? '/edit-image' : '/add-image' %>" method="POST" class="w-50">
     <div class="form-group">
       <label for="imageUrl" class="form-label">Image Url</label>

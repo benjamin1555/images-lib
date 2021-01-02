@@ -1,3 +1,5 @@
+const { validationResult } = require('express-validator');
+
 const Image = require('../models/image');
 
 exports.getHome = async (req, res, next) => {
@@ -30,9 +32,15 @@ exports.getAddImage = (req, res, next) => {
 };
 
 exports.postAddImage = async (req, res, next) => {
-  const imageUrl = req.body.imageUrl.trim();
-  const tags = req.body.tags.trim().split(' ');
+  const imageUrl = req.body.imageUrl;
+  const tags = req.body.tags.split(' ');
   const user = req.user;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return renderAddImage(req, res);
+  }
+
   const image = new Image({
     user: user,
     imageUrl,
@@ -63,12 +71,17 @@ exports.getEditImage = async (req, res, next) => {
 
 exports.postEditImage = async (req, res, next) => {
   const imageId = req.body.imageId;
-  const imageUrl = req.body.imageUrl.trim();
-  const tags = req.body.tags.trim().split(' ');
+  const imageUrl = req.body.imageUrl;
+  const tags = req.body.tags.split(' ');
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return renderEditImage(req, res, imageId);
+  }
 
   try {
     const imageToUpdate = await Image.findById(imageId);
-    if (imageToUpdate.user.toString() !== req.user._id.toString()) {
+    if (!isUserAllowedToAlterImage(req.user, imageToUpdate)) {
       return res.redirect('/');
     }
     imageToUpdate.imageUrl = imageUrl;
@@ -88,7 +101,7 @@ exports.deleteImage = async (req, res, next) => {
   const imageToDelete = await Image.findById(imageId);
 
   try {
-    if (imageToDelete.user.toString() !== req.user._id.toString()) {
+    if (!isUserAllowedToAlterImage(user, imageToDelete)) {
       return res.redirect('/');
     }
     const deletedImage = await Image.findByIdAndDelete(imageId);
@@ -117,21 +130,27 @@ const renderImageDetail = async (req, res, imageId) => {
 };
 
 const renderAddImage = (req, res) => {
-  res.render('edit-image', {
+  const statusCode = isValidationResultEmpty(req) ? 200 : 422;
+
+  res.status(statusCode).render('edit-image', {
     pageTitle: 'Images Lib | Add Image',
     path: '/add-image',
-    editing: false
+    editing: false,
+    validationErrors: validationResult(req).array()
   });
 };
 
 const renderEditImage = async (req, res, imageId) => {
   image = await Image.findById(imageId);
+  console.log(image);
+  const statusCode = isValidationResultEmpty(req) ? 200 : 422;
 
-  res.render('edit-image', {
+  res.status(statusCode).render('edit-image', {
     pageTitle: 'Images Lib | Edit Image',
     path: '/',
     editing: true,
-    image
+    image,
+    validationErrors: validationResult(req).array()
   });
 };
 
@@ -142,5 +161,10 @@ const removeImageIdFromUserUploadedImages = (user, deletedImage) => {
 };
 
 const isUserAllowedToAlterImage = (user, image) => {
-  return image.user._id.toString() === user._id.toString();
+  const imageUserId = (image.user._id || image.user);
+  return imageUserId.toString() === user._id.toString();
 };
+
+const isValidationResultEmpty = req => {
+  return validationResult(req).array().length === 0;
+}
