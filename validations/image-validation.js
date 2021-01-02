@@ -1,16 +1,26 @@
 const { body } = require('express-validator');
 
-const imageValidationRules = () => {
+const addImageValidationRules = () => {
   return [
-    body('imageUrl')
-      .trim()
+    body('image')
       .not()
       .isEmpty()
-      .withMessage('Image must be present.'),
+      .withMessage('Image must be present and only with file extension .jpeg, .jpg or .png.'),
     body('tags')
       .trim()
       .toLowerCase()
   ];
 };
 
-module.exports = imageValidationRules;
+const editImageValidationRules = () => {
+  return [
+    body('tags')
+      .trim()
+      .toLowerCase()
+  ]
+};
+
+module.exports = {
+  addImageValidationRules,
+  editImageValidationRules
+};

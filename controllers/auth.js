@@ -39,7 +39,7 @@ exports.postLogin = async (req, res, next) => {
     req.flash('success', 'Successfully logged in.');
     res.redirect('/');
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
@@ -48,7 +48,7 @@ exports.postLogout = async (req, res, next) => {
     await req.session.destroy();
     res.redirect('/');
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
@@ -97,7 +97,7 @@ exports.postSignup = async (req, res, next) => {
     await new User({ email, username, password: hashedPassword}).save();
     res.redirect('/login');
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 

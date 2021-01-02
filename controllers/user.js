@@ -11,6 +11,6 @@ exports.getDashboard = async (req, res, next) => {
       images: userImages
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };

@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const Image = require('../models/image');
+const uploadImage = require('../util/upload-image');
 
 exports.getHome = async (req, res, next) => {
   try {
@@ -14,7 +15,7 @@ exports.getHome = async (req, res, next) => {
       infoMessage: req.flash('info')
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
@@ -23,7 +24,7 @@ exports.getImage = async (req, res, next) => {
   try {
     renderImageDetail(req, res, imageId);
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
@@ -32,30 +33,34 @@ exports.getAddImage = (req, res, next) => {
 };
 
 exports.postAddImage = async (req, res, next) => {
-  const imageUrl = req.body.imageUrl;
-  const tags = req.body.tags.split(' ');
-  const user = req.user;
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return renderAddImage(req, res);
-  }
-
-  const image = new Image({
-    user: user,
-    imageUrl,
-    tags
-  });
-
   try {
+    let imageUrl;
+    if (req.file) {
+      const uploadedImage = await uploadImage(req.file);
+      imageUrl = uploadedImage.url;
+    }
+    const tags = req.body.tags.split(',');
+    const user = req.user;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return renderAddImage(req, res);
+    }
+
+    const image = new Image({
+      user: user,
+      imageUrl,
+      tags
+    });
+
     const savedImage = await image.save();
     await user.uploadedImages.push(savedImage._id);
     await user.save();
     req.flash('info', 'Image uploaded.');
     res.redirect(`/images/${savedImage._id}`);
   } catch (err) {
-    renderAddImage(req, res);
     console.log(err);
+    next(err);
   }
 };
 
@@ -65,14 +70,18 @@ exports.getEditImage = async (req, res, next) => {
   try {
     renderEditImage(req, res, imageId);
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
 exports.postEditImage = async (req, res, next) => {
+  let imageUrl;
+  if (req.file) {
+    const uploadedImage = await uploadImage(req.file);
+    imageUrl = uploadedImage.url;
+  }
   const imageId = req.body.imageId;
-  const imageUrl = req.body.imageUrl;
-  const tags = req.body.tags.split(' ');
+  const tags = req.body.tags.split(',');
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -84,14 +93,14 @@ exports.postEditImage = async (req, res, next) => {
     if (!isUserAllowedToAlterImage(req.user, imageToUpdate)) {
       return res.redirect('/');
     }
-    imageToUpdate.imageUrl = imageUrl;
+    imageToUpdate.imageUrl = imageUrl || imageToUpdate.imageUrl;
     imageToUpdate.tags = tags;
     await imageToUpdate.save();
     req.flash('info', 'Image edited.');
     res.redirect(`/images/${imageId}`);
   } catch (err) {
-    renderEditImage(req, res, imageId);
     console.log(err);
+    next(err);
   }
 };
 
@@ -110,8 +119,7 @@ exports.deleteImage = async (req, res, next) => {
     req.flash('info', 'Image deleted.');
     res.redirect('/');
   } catch (err) {
-    res.redirect('/');
-    console.log(err);
+    next(err);
   }
 };
 
@@ -142,7 +150,6 @@ const renderAddImage = (req, res) => {
 
 const renderEditImage = async (req, res, imageId) => {
   image = await Image.findById(imageId);
-  console.log(image);
   const statusCode = isValidationResultEmpty(req) ? 200 : 422;
 
   res.status(statusCode).render('edit-image', {
