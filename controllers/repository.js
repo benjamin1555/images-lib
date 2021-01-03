@@ -35,7 +35,7 @@ exports.getHome = async (req, res, next) => {
 };
 
 exports.postSearchImages = async (req, res, next) => {
-  const searchQuery = req.body.queryString.toLowerCase();
+  const searchQuery = req.body.queryString.trim().toLowerCase();
   const searchRegExp = new RegExp(searchQuery);
   const page = +req.query.page || 1;
 
