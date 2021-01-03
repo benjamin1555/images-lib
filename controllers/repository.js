@@ -56,7 +56,9 @@ exports.postAddImage = async (req, res, next) => {
       imageUrl = uploadedImage.secure_url;
       cloudinaryPublicId = uploadedImage.public_id;
     }
-    const tags = req.body.tags.split(',').map(tag => tag.trim());
+    const tags = req.body.tags.split(',')
+      .map(tag => tag.trim())
+      .sort();
     const user = req.user;
     const errors = validationResult(req);
 
@@ -102,7 +104,9 @@ exports.postEditImage = async (req, res, next) => {
       cloudinaryPublicId = uploadedImage.public_id;
     }
     const imageId = req.body.imageId;
-    const tags = req.body.tags.split(',').map(tag => tag.trim());
+    const tags = req.body.tags.split(',')
+      .map(tag => tag.trim())
+      .sort();
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -113,7 +117,7 @@ exports.postEditImage = async (req, res, next) => {
     if (!isUserAllowedToAlterImage(req.user, imageToUpdate)) {
       return res.redirect('/');
     }
-    if (imageToUpdate.imageUrl !== imageUrl) {
+    if (imageUrl) {
       await cloudinaryStorage.deleteImage(imageToUpdate.cloudinaryPublicId);
     }
     imageToUpdate.imageUrl = imageUrl || imageToUpdate.imageUrl;
