@@ -10,7 +10,7 @@
 
   <div class="row text-center text-lg-left">
     <% images.forEach((image, i)=> { %>
-      <div class="col-lg-3 col-md-4 col-6">
+      <div class="col-lg-4 col-md-4 col-6">
         <a href="/images/<%= image._id %>" class="d-block mb-4 h-100">
           <img class="img-fluid img-thumbnail" src="<%= image.imageUrl %>" alt="Image from <%= image.author %> - <%= image._id %>">
         </a>

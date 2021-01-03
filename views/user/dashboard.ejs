@@ -8,6 +8,8 @@
   <div class="card-body">
     <% if (images.length > 0) { %>
       <h5 class="card-title mb-4">You have uploaded <%= imageCount %> images:</h5>
+
+      <%- include('../includes/pagination-dashboard.ejs') %>
       <table class="table table-hover">
         <thead>
           <tr>
@@ -19,20 +21,20 @@
         </thead>
         <tbody>
           <% images.forEach(image => { %>
-              <tr>
-                <td class="thumbnail"><a href="images/<%= image._id %>" target="_blank"><img src="<%= image.imageUrl %>" alt="<%= image.imageUrl %>"></a></td>
-                <td class="tags text-center"><%= image.tags.join(', ') %></td>
-                <td class="upload-date text-center"><%= image.createdAt.toDateString() %></td>
-                <td class="edit-date text-center">
-                  <div class="image-controls h-100 d-flex flex-column">
-                    <a href="/edit-image/<%= image._id %>?edit=true" class="btn btn-outline-primary btn-sm my-2" role="button" aria-pressed="true">Edit</a>
-                    <form action="/delete-image/<%= image._id %>" method="POST" class="my-2">
-                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                      <button type="submit" class="btn btn-outline-danger btn-sm w-100">Delete</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
+            <tr>
+              <td class="thumbnail"><a href="images/<%= image._id %>" target="_blank"><img src="<%= image.imageUrl %>" alt="<%= image.imageUrl %>"></a></td>
+              <td class="tags text-center"><%= image.tags.join(', ') %></td>
+              <td class="upload-date text-center"><%= image.createdAt.toDateString() %></td>
+              <td class="edit-date text-center">
+                <div class="image-controls h-100 d-flex flex-column">
+                  <a href="/edit-image/<%= image._id %>?edit=true" class="btn btn-outline-primary btn-sm my-2" role="button" aria-pressed="true">Edit</a>
+                  <form action="/delete-image/<%= image._id %>" method="POST" class="my-2">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
           <% }) %>
         </tbody>
       </table>

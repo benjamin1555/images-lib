@@ -4,7 +4,7 @@ const Image = require('../models/image');
 const uploadImage = require('../util/upload-image');
 const cloudinaryStorage = require('../util/delete-image');
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 9;
 
 exports.getHome = async (req, res, next) => {
   const page = +req.query.page || 1;
@@ -135,10 +135,10 @@ exports.deleteImage = async (req, res, next) => {
       return res.redirect('/');
     }
     const deletedImage = await Image.findByIdAndDelete(imageId);
-    removeImageIdFromUserUploadedImages(user, deletedImage);
-    cloudinaryStorage.deleteImage(deletedImage.cloudinaryPublicId);
-    await user.save();
     req.flash('info', 'Image deleted.');
+    removeImageIdFromUserUploadedImages(user, deletedImage);
+    await cloudinaryStorage.deleteImage(deletedImage.cloudinaryPublicId);
+    await user.save();
     res.redirect('/');
   } catch (err) {
     next(err);
