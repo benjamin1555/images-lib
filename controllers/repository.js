@@ -34,6 +34,38 @@ exports.getHome = async (req, res, next) => {
   }
 };
 
+exports.postSearchImages = async (req, res, next) => {
+  const searchQuery = req.body.queryString.toLowerCase();
+  const searchRegExp = new RegExp(searchQuery);
+  const page = +req.query.page || 1;
+
+  try {
+    const imageCount = await Image.find({ tags: { $in: [searchRegExp] } }).countDocuments();
+    const images = await Image.find({ tags: { $in: [searchRegExp] } })
+      .sort({ createdAt: 'desc' })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
+
+    res.render('search-results', {
+      pageTitle: 'Images Lib | Search Results',
+      path: '/search-results',
+      images,
+      searchQuery,
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < imageCount,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil((imageCount / ITEMS_PER_PAGE)),
+      successMessage: req.flash('success'),
+      infoMessage: req.flash('info')
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 exports.getImage = async (req, res, next) => {
   const imageId = req.params.imageId;
   try {

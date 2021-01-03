@@ -7,6 +7,7 @@ const { addImageValidationRules, editImageValidationRules } = require('../valida
 const router = express.Router();
 
 router.get('/', repositoryController.getHome);
+router.post('/search-images', repositoryController.postSearchImages);
 router.get('/images/:imageId', repositoryController.getImage);
 router.get('/add-image', isAuth, repositoryController.getAddImage);
 router.post('/add-image', isAuth, addImageValidationRules(), repositoryController.postAddImage);
