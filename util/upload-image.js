@@ -21,7 +21,8 @@ const uploadImage = file => {
       },
       function(err, image) {
         if (err) reject(err);
-        deleteTmpImage(file.originalname);
+        // For dev purpose only
+        // deleteTmpImage(file.originalname);
         resolve(image);
       });
   });
