@@ -10,7 +10,7 @@ exports.getHome = async (req, res, next) => {
   const page = +req.query.page || 1;
 
   try {
-    const imageCount = await Image.find().count();
+    const imageCount = await Image.find().countDocuments();
     const images = await Image.find()
       .sort({ createdAt: 'desc' })
       .skip((page - 1) * ITEMS_PER_PAGE)
