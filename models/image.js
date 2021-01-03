@@ -12,6 +12,10 @@ const imageSchema = new Schema({
       type: String,
       required: true
     },
+    cloudinaryPublicId: {
+      type: String,
+      required: true
+    },
     tags: {
       type: Array
     }

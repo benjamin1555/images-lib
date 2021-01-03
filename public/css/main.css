@@ -13,6 +13,11 @@ li {
   bottom: 0px;
 }
 
+.img-thumbnail {
+  max-height: 200px;
+  max-width: 200px;
+}
+
 .img-preview {
   display: none;
   max-width: 200px;

@@ -2,15 +2,30 @@ const { validationResult } = require('express-validator');
 
 const Image = require('../models/image');
 const uploadImage = require('../util/upload-image');
+const cloudinaryStorage = require('../util/delete-image');
+
+const ITEMS_PER_PAGE = 6;
 
 exports.getHome = async (req, res, next) => {
+  const page = +req.query.page || 1;
+
   try {
-    const images = await Image.find();
+    const imageCount = await Image.find().count();
+    const images = await Image.find()
+      .sort({ createdAt: 'desc' })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
 
     res.render('home', {
       pageTitle: 'Images Lib | Home',
       path: '/',
       images,
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < imageCount,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil((imageCount / ITEMS_PER_PAGE)),
       successMessage: req.flash('success'),
       infoMessage: req.flash('info')
     });
@@ -35,9 +50,11 @@ exports.getAddImage = (req, res, next) => {
 exports.postAddImage = async (req, res, next) => {
   try {
     let imageUrl;
+    let cloudinaryPublicId;
     if (req.file) {
       const uploadedImage = await uploadImage(req.file);
-      imageUrl = uploadedImage.url;
+      imageUrl = uploadedImage.secure_url;
+      cloudinaryPublicId = uploadedImage.public_id;
     }
     const tags = req.body.tags.split(',');
     const user = req.user;
@@ -50,6 +67,7 @@ exports.postAddImage = async (req, res, next) => {
     const image = new Image({
       user: user,
       imageUrl,
+      cloudinaryPublicId,
       tags
     });
 
@@ -76,9 +94,11 @@ exports.getEditImage = async (req, res, next) => {
 
 exports.postEditImage = async (req, res, next) => {
   let imageUrl;
+  let cloudinaryPublicId;
   if (req.file) {
     const uploadedImage = await uploadImage(req.file);
-    imageUrl = uploadedImage.url;
+    imageUrl = uploadedImage.secure_url;
+    cloudinaryPublicId = uploadedImages.secure_url;
   }
   const imageId = req.body.imageId;
   const tags = req.body.tags.split(',');
@@ -94,6 +114,7 @@ exports.postEditImage = async (req, res, next) => {
       return res.redirect('/');
     }
     imageToUpdate.imageUrl = imageUrl || imageToUpdate.imageUrl;
+    imageToUpdate.cloudinaryPublicId = cloudinaryPublicId || imageToUpdate.cloudinaryPublicId;
     imageToUpdate.tags = tags;
     await imageToUpdate.save();
     req.flash('info', 'Image edited.');
@@ -115,6 +136,7 @@ exports.deleteImage = async (req, res, next) => {
     }
     const deletedImage = await Image.findByIdAndDelete(imageId);
     removeImageIdFromUserUploadedImages(user, deletedImage);
+    cloudinaryStorage.deleteImage(deletedImage.cloudinaryPublicId);
     await user.save();
     req.flash('info', 'Image deleted.');
     res.redirect('/');
