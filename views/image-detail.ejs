@@ -5,7 +5,9 @@
 <hr class="mt-2 mb-4">
 
 <div class="row text-center text-lg-left">
-  <img class=" rounded mx-auto d-block" src="<%= image.imageUrl %>" alt="Image from <%= image.author %> - <%= image._id %>">
+  <a href="<%= image.imageUrl %>" target="_blank">
+    <img class="image-detail rounded mx-auto d-block" src="<%= image.imageUrl %>" alt="Image from <%= image.author %> - <%= image._id %>">
+  </a>
 </div>
 <p class="mt-2">Tags: <%= image.tags.join(', ') %></p>
 <% if (userAllowedToAlterImage) { %>

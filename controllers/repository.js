@@ -56,7 +56,7 @@ exports.postAddImage = async (req, res, next) => {
       imageUrl = uploadedImage.secure_url;
       cloudinaryPublicId = uploadedImage.public_id;
     }
-    const tags = req.body.tags.split(',');
+    const tags = req.body.tags.split(',').map(tag => tag.trim());
     const user = req.user;
     const errors = validationResult(req);
 
@@ -95,23 +95,26 @@ exports.getEditImage = async (req, res, next) => {
 exports.postEditImage = async (req, res, next) => {
   let imageUrl;
   let cloudinaryPublicId;
-  if (req.file) {
-    const uploadedImage = await uploadImage(req.file);
-    imageUrl = uploadedImage.secure_url;
-    cloudinaryPublicId = uploadedImages.secure_url;
-  }
-  const imageId = req.body.imageId;
-  const tags = req.body.tags.split(',');
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return renderEditImage(req, res, imageId);
-  }
-
   try {
+    if (req.file) {
+      const uploadedImage = await uploadImage(req.file);
+      imageUrl = uploadedImage.secure_url;
+      cloudinaryPublicId = uploadedImage.public_id;
+    }
+    const imageId = req.body.imageId;
+    const tags = req.body.tags.split(',').map(tag => tag.trim());
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return renderEditImage(req, res, imageId);
+  }
+
     const imageToUpdate = await Image.findById(imageId);
     if (!isUserAllowedToAlterImage(req.user, imageToUpdate)) {
       return res.redirect('/');
+    }
+    if (imageToUpdate.imageUrl !== imageUrl) {
+      await cloudinaryStorage.deleteImage(imageToUpdate.cloudinaryPublicId);
     }
     imageToUpdate.imageUrl = imageUrl || imageToUpdate.imageUrl;
     imageToUpdate.cloudinaryPublicId = cloudinaryPublicId || imageToUpdate.cloudinaryPublicId;
@@ -190,6 +193,8 @@ const removeImageIdFromUserUploadedImages = (user, deletedImage) => {
 };
 
 const isUserAllowedToAlterImage = (user, image) => {
+  if (!user) return false;
+
   const imageUserId = (image.user._id || image.user);
   return imageUserId.toString() === user._id.toString();
 };
