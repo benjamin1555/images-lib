@@ -54,14 +54,14 @@
 
     console.log(formData);
 
-    fetch('http://localhost:3000/delete-bulk-images', {
+    fetch('https://image-lib.herokuapp.com/delete-bulk-images', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
     })
-      .then(() => location.reload())
+      .then(() => location.replace('https://image-lib.herokuapp.com/dashboard/'))
       .catch(err => console.log(err));
   };
 

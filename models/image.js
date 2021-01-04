@@ -18,6 +18,10 @@ const imageSchema = new Schema({
     },
     tags: {
       type: Array
+    },
+    imageTitle: {
+      type: String,
+      required: true
     }
   }, { timestamps: true }
 );

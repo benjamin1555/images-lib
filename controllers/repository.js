@@ -35,13 +35,21 @@ exports.getHome = async (req, res, next) => {
 };
 
 exports.postSearchImages = async (req, res, next) => {
+  const searchFilter = req.body.searchFilter.trim().toLowerCase();
   const searchQuery = req.body.queryString.trim().toLowerCase();
-  const searchRegExp = new RegExp(searchQuery);
+  const searchRegExp = new RegExp(searchQuery, 'i');
   const page = +req.query.page || 1;
+  let findQuery;
+
+  if (searchFilter === 'tags') {
+    findQuery = { tags: { $in: [searchRegExp] } };
+  } else {
+    findQuery = { imageTitle: searchRegExp };
+  }
 
   try {
-    const imageCount = await Image.find({ tags: { $in: [searchRegExp] } }).countDocuments();
-    const images = await Image.find({ tags: { $in: [searchRegExp] } })
+    const imageCount = await Image.find(findQuery).countDocuments();
+    const images = await Image.find(findQuery)
       .sort({ createdAt: 'desc' })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE);
@@ -88,6 +96,7 @@ exports.postAddImage = async (req, res, next) => {
       imageUrl = uploadedImage.secure_url;
       cloudinaryPublicId = uploadedImage.public_id;
     }
+    const imageTitle = req.body.imageTitle;
     const tags = req.body.tags.split(',')
       .map(tag => tag.trim())
       .sort();
@@ -102,7 +111,8 @@ exports.postAddImage = async (req, res, next) => {
       user: user,
       imageUrl,
       cloudinaryPublicId,
-      tags
+      tags,
+      imageTitle
     });
 
     const savedImage = await image.save();
@@ -135,6 +145,7 @@ exports.postEditImage = async (req, res, next) => {
       imageUrl = uploadedImage.secure_url;
       cloudinaryPublicId = uploadedImage.public_id;
     }
+    const imageTitle = req.body.imageTitle;
     const imageId = req.body.imageId;
     const tags = req.body.tags.split(',')
       .map(tag => tag.trim())
@@ -155,6 +166,7 @@ exports.postEditImage = async (req, res, next) => {
     imageToUpdate.imageUrl = imageUrl || imageToUpdate.imageUrl;
     imageToUpdate.cloudinaryPublicId = cloudinaryPublicId || imageToUpdate.cloudinaryPublicId;
     imageToUpdate.tags = tags;
+    imageToUpdate.imageTitle = imageTitle;
     await imageToUpdate.save();
     req.flash('info', 'Image edited.');
     res.redirect(`/images/${imageId}`);

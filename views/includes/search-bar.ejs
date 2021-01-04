@@ -3,7 +3,11 @@
     <div class="card mt-3 mb-5 p-4">
         <form action="/search-images" method="POST">
           <div class="input-group">
-            <input type="text" class="form-control" name="queryString" id="queryString" placeholder="Search with image tag">
+            <select id="searchFilter" name="searchFilter" class="form-control btn btn-outline-primary dropdown-toggle">
+              <option selected>Tags</option>
+              <option>Title</option>
+            </select>
+            <input type="text" class="form-control  w-50" name="queryString" id="queryString" placeholder="Search images">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="input-group-append">
               <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>

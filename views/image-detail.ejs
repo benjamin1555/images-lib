@@ -1,7 +1,8 @@
 <%- include('includes/head.ejs') %>
 <%- include('includes/navigation.ejs') %>
 
-<h3 class="font-weight-light text-center text-lg-left mt-4 mb-0">Image sent by <%= image.user.username %></h3>
+<h3 class="font-weight-light text-center text-lg-left mt-4 mb-0"><%= image.imageTitle %></h3>
+<p class="font-italic text-center image-title">Sent by <%= image.user.username %></p>
 <hr class="mt-2 mb-4">
 
 <div class="row text-center text-lg-left">

@@ -8,7 +8,7 @@
   <div class="col-lg-5 col-md-8 col-sm-12 d-flex flex-column align-items-center">
     <% if (validationErrors.length > 0) { %>
       <div class="alert alert-danger text-center" role="alert">
-        <p>Could not upload picture:</p>
+        <p>Could not <%= editing ? 'edit' : 'ppload' %> image:</p>
         <ul>
           <% validationErrors.forEach(error => { %>
             <li>- <%= error.msg %></li>
@@ -28,6 +28,10 @@
           id="image"
           class="form-control">
         <small id="tagsHelp" class="form-text text-muted">.jpeg, .jpg and .png files accepeted only.</small>
+      </div>
+      <div class="form-group mt-2">
+        <label for="imageTitle" class="form-label">Image Title</label>
+        <input type="text" name="imageTitle" id="imageTitle" class="form-control" value="<%= editing ? image.imageTitle : '' %>">
       </div>
       <div class="form-group mt-2">
         <label for="tags" class="form-label">Image Tags</label>
