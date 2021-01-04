@@ -34,9 +34,11 @@
     const checkedItemId = e.currentTarget.id;
     const checkedItemIdx = selectedCheckboxes.findIndex(id => id === checkedItemId);
     checkedItemIdx === -1 ? selectedCheckboxes.push(checkedItemId) : selectedCheckboxes.splice(checkedItemIdx, 1);
+    deleteSelectionBtn.disabled = (!selectedCheckboxes.length > 0);
   };
 
   const selectAllCheckboxes = () => {
+    deleteSelectionBtn.disabled = false;
     allCheckboxes.forEach((input, i) => {
       input.checked = true;
       selectedCheckboxes[i] = input.id;
