@@ -12,6 +12,7 @@ const User = require('./models/user');
 const repositoryRoutes = require('./routes/repository');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const setHeaders = require('./middleware/set-headers');
 const multipartFormdataParser = require('./middleware/multipart-formdata-parser');
 const errorController = require('./controllers/error');
 
@@ -22,11 +23,13 @@ const store = new MongoDBStore( {
 });
 const csrfProtection = csrf();
 
+app.use(setHeaders);
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(multipartFormdataParser);
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: process.env.SESSION_SECRET,

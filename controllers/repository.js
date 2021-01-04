@@ -167,9 +167,9 @@ exports.postEditImage = async (req, res, next) => {
 exports.deleteImage = async (req, res, next) => {
   const imageId = req.params.imageId;
   const user = req.user;
-  const imageToDelete = await Image.findById(imageId);
 
   try {
+    const imageToDelete = await Image.findById(imageId);
     if (!isUserAllowedToAlterImage(user, imageToDelete)) {
       return res.redirect('/');
     }
@@ -180,6 +180,28 @@ exports.deleteImage = async (req, res, next) => {
     await user.save();
     res.redirect('/');
   } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteBulkImages = async (req, res, next) => {
+  const imagesToDeleteIds = req.body.imagesToDelete;
+  const user = req.user;
+
+  try {
+    const imagesToDelete = await Image.find({ _id: { $in: imagesToDeleteIds } });
+
+    const deleteCloudinaryImagesPromises = [];
+    imagesToDelete.forEach(img => {
+      removeImageIdFromUserUploadedImages(user, img);
+      deleteCloudinaryImagesPromises.push(cloudinaryStorage.deleteImage(img.cloudinaryPublicId));
+    });
+    await Promise.all(deleteCloudinaryImagesPromises);
+    await Image.deleteMany({ _id: { $in: imagesToDeleteIds } });
+    await user.save();
+    res.end();
+  } catch (err) {
+    console.log(err);
     next(err);
   }
 };

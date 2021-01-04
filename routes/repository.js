@@ -14,5 +14,6 @@ router.post('/add-image', isAuth, addImageValidationRules(), repositoryControlle
 router.get('/edit-image/:imageId', isAuth, repositoryController.getEditImage)
 router.post('/edit-image', isAuth, editImageValidationRules(), repositoryController.postEditImage);
 router.post('/delete-image/:imageId', isAuth, repositoryController.deleteImage);
+router.delete('/delete-bulk-images', isAuth, repositoryController.deleteBulkImages);
 
 module.exports = router;

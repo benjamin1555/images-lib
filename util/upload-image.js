@@ -20,10 +20,10 @@ const uploadImage = file => {
         public_id: `shopify-challenge/${filename}`
       },
       function(err, image) {
-        if (err) reject(err);
+        if (err) return reject(err);
         // For dev purpose only
         // deleteTmpImage(file.originalname);
-        resolve(image);
+        return resolve(image);
       });
   });
 };

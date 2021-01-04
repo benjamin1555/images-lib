@@ -10,22 +10,34 @@
       <h5 class="card-title mb-4">You have uploaded <%= imageCount %> images:</h5>
 
       <%- include('../includes/pagination-dashboard.ejs') %>
+      <div class="delete-selection-controls d-flex flex-column">
+        <button id="select-all-btn" class="btn btn-outline-primary btn-sm my-2">Select All</button>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button id="delete-selection-btn" class="btn btn-outline-danger btn-sm">Delete Selected</button>
+      </div>
+
       <table class="table table-hover">
         <thead>
           <tr>
+            <th scope="col" class="text-center"></th>
             <th scope="col" class="text-center">Thumbnail</th>
             <th scope="col" class="text-center">Tags</th>
-            <th scope="col" class="text-center">Upload Date</th>
+            <th scope="col" class="text-center upload-date">Upload Date</th>
             <th scope="col" class="text-center"></th>
           </tr>
         </thead>
         <tbody>
           <% images.forEach(image => { %>
             <tr>
+              <td class="delete-checkbox">
+                <div class="delete-checkbox-wrapper">
+                  <input type="checkbox" class="form-check-input" id="<%= image._id %>">
+                </div>
+              </td>
               <td class="thumbnail"><a href="images/<%= image._id %>" target="_blank"><img src="<%= image.imageUrl %>" alt="<%= image.imageUrl %>"></a></td>
               <td class="tags text-center"><%= image.tags.join(', ') %></td>
               <td class="upload-date text-center"><%= image.createdAt.toDateString() %></td>
-              <td class="edit-date text-center">
+              <td class="edit-date text-center justify-content-end">
                 <div class="image-controls h-100 d-flex flex-column">
                   <a href="/edit-image/<%= image._id %>?edit=true" class="btn btn-outline-primary btn-sm my-2" role="button" aria-pressed="true">Edit</a>
                   <form action="/delete-image/<%= image._id %>" method="POST" class="my-2">

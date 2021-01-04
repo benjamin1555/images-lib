@@ -13,9 +13,14 @@ li {
   bottom: 0px;
 }
 
+.image-detail {
+  max-width: 100%;
+  height: auto;
+}
+
 .img-thumbnail {
-  max-height: 300px;
-  /* max-width: 300px; */
+  max-width: 300px;
+
 }
 
 .img-preview {
@@ -24,17 +29,46 @@ li {
   margin-bottom: 2rem;
 }
 
+.delete-selection-controls {
+  width: 10rem;
+}
+
+.delete-checkbox-wrapper {
+  height: 100%!important;
+}
+
+.uploaded-images td.delete-checkbox {
+  width: 25px;
+}
+
+.uploaded-images td.delete-checkbox input {
+  margin: auto 0;
+}
+
 .uploaded-images td.thumbnail {
-  width: 250px;
+  height: 100px;
+  width: 100px;
+}
+
+.uploaded-images td.thumbnail img {
+  max-width: 100px;
 }
 
 .uploaded-images td.tags {
-  width: 400px;
+  max-width: 400px;
 }
 
-.uploaded-images img {
-  max-width: 200px;
-  height: auto;
+.uploaded-images td.upload-date {
+  width: 100px!important;
 }
 
+.uploaded-images td.edit-date {
+  width: 200px;
+}
 
+@media (max-width: 400px) {
+  .uploaded-images td.upload-date,
+  th.upload-date {
+    display: none;
+  }
+}

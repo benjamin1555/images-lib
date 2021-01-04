@@ -11,9 +11,9 @@ const deleteImage = cloudinaryPublicId => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.destroy(
       cloudinaryPublicId, function(err, result) {
-        if (err) reject(err);
+        if (err) return reject(err);
         console.log(`Cloudinary ${cloudinaryPublicId} destroyed.`);
-        resolve(result);
+        return resolve(result);
       });
   });
 };
