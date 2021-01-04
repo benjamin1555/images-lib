@@ -9,14 +9,11 @@
 <% if (images.length === 0) { %>
   <p>No images yet...</p>
 <% } else { %>
-
-  <div class="row text-center text-lg-left">
+  <div class="images-gallery">
     <% images.forEach((image, i)=> { %>
-      <div class="col-lg-4 col-md-6 col-12">
-        <a href="/images/<%= image._id %>" class="d-block mb-4">
-          <img class="img-fluid img-thumbnail" src="<%= image.imageUrl %>" alt="Image from <%= image.author %> - <%= image._id %>">
-        </a>
-      </div>
+      <a href="/images/<%= image._id %>" class="d-block mb-4">
+        <div class="img-thumbnail" style="background-image: url('<%= image.imageUrl %>')"></div>
+      </a>
     <% }) %>
   </div>
 
