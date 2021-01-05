@@ -27,6 +27,7 @@ p.image-title {
   max-width: 100%;
   height: auto;
 }
+
 .img-preview {
   display: none;
   max-width: 200px;
@@ -93,8 +94,13 @@ p.image-title {
   color: white;
   font-weight: bolder;
   text-shadow: 0 0 10px rgba(0,0,0,0.7);
+  opacity: 0.9;
 }
 
+.images-gallery .img-thumbnail:hover {
+  transform: scale(1.009);
+  opacity: 1;
+}
 
 @media (min-width: 100px) and (max-width: 575px) {
   .images-gallery {
