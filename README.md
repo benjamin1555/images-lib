@@ -3,6 +3,8 @@ Small images repository (imgur like).
 User can browse all updated images, search specific images with keywords.
 User can perform CRUD operations on images.
 
+Have a look at it [here](https://image-lib.herokuapp.com/).
+
 ## Requirements
 
 * Node.js - [https://nodejs.org/](https://nodejs.org/)
