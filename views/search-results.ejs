@@ -4,11 +4,11 @@
 <h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">Search Results</h1>
 <hr class="mt-2 mb-3">
 
+<%- include('includes/search-bar.ejs') %>
 <% if (images.length === 0) { %>
   <p class="text-center mt-5">We have not found anything matching your request. Try something else.</p>
-  <%- include('includes/search-bar.ejs') %>
 <% } else { %>
-    <p class="text-center mt-3 mb-4">Here is what we found for "<%= searchQuery %>":</p>
+    <p class="text-center mb-4 pb-2 border-bottom">Here is what we found for "<%= searchQuery %>":</p>
     <div class="images-gallery">
     <% images.forEach((image, i)=> { %>
       <a href="/images/<%= image._id %>" class="d-block mb-4">
