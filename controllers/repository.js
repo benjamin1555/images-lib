@@ -223,6 +223,10 @@ exports.deleteBulkImages = async (req, res, next) => {
 const renderImageDetail = async (req, res, imageId) => {
   image = await Image.findById(imageId).populate('user', 'username');
 
+  if (!image) {
+    return res.redirect('/');
+  }
+
   res.render('image-detail', {
     pageTitle: 'Images Lib | Details',
     path: '/image-detail',
@@ -245,6 +249,11 @@ const renderAddImage = (req, res) => {
 
 const renderEditImage = async (req, res, imageId) => {
   image = await Image.findById(imageId);
+
+  if (!image) {
+    return res.redirect('/')
+  }
+
   const statusCode = isValidationResultEmpty(req) ? 200 : 422;
 
   res.status(statusCode).render('edit-image', {
