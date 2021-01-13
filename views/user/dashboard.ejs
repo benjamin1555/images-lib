@@ -42,7 +42,11 @@
                   <a href="/edit-image/<%= image._id %>?edit=true" class="btn btn-outline-primary btn-sm my-2" role="button" aria-pressed="true">Edit</a>
                   <form action="/delete-image/<%= image._id %>" method="POST" class="my-2">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">Delete</button>
+                    <button
+                      type="submit"
+                      class="btn btn-outline-danger btn-sm w-100"
+                      onclick="return confirm('Are you sure you want to delete this image?')"
+                    >Delete</button>
                   </form>
                 </div>
               </td>

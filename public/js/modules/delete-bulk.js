@@ -35,8 +35,6 @@ export default function deleteBulkImages() {
       imagesToDelete: selectedCheckboxes
     };
 
-    console.log(formData);
-
     fetch(appRoutes['DELETE_IMAGES'], {
       method: 'DELETE',
       headers: {
@@ -50,7 +48,11 @@ export default function deleteBulkImages() {
 
   if (selectAllBtn) {
     selectAllBtn.addEventListener('click', selectAllCheckboxes);
-    deleteSelectionBtn.addEventListener('click', deleteSelection);
+    deleteSelectionBtn.addEventListener('click', () => {
+      if (window.confirm('Are you sure you want to delete the selected images?')) {
+        deleteSelection();
+      }
+    });
     allCheckboxes.forEach(input => input.addEventListener('change', handleCheckboxChange));
   }
 }
