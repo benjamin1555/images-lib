@@ -1,8 +1,6 @@
 const appRoutes = {
-  // DELETE_IMAGES: 'https://image-lib.herokuapp.com/delete-bulk-images',
-  // GET_DASHBOARD: 'https://image-lib.herokuapp.com/dashboard'
-  DELETE_IMAGES: 'http://localhost:3000/delete-bulk-images',
-  GET_DASHBOARD: 'http://localhost:3000/dashboard'
+  DELETE_IMAGES: 'https://image-lib.herokuapp.com/delete-bulk-images',
+  GET_DASHBOARD: 'https://image-lib.herokuapp.com/dashboard'
 };
 
 export default function deleteBulkImages() {
